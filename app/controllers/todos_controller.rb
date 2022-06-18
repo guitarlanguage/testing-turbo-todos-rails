@@ -3,7 +3,7 @@ class TodosController < ApplicationController
 
   # GET /todos or /todos.json
   def index
-    @todos = Todo.all
+    @todos = Todo.in_order_of(:status, %w[incomplete complete])
   end
 
   # GET /todos/1 or /todos/1.json
@@ -28,10 +28,15 @@ class TodosController < ApplicationController
       if @todo.save
         format.turbo_stream
         format.html { redirect_to todo_url(@todo), notice: "Todo was successfully created." }
-        format.json { render :show, status: :created, location: @todo }
+        # format.json { render :show, status: :created, location: @todo }
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @todo.errors, status: :unprocessable_entity }
+        format.turbo_stream { 
+          render turbo_stream: turbo_stream.replace("#{helpers.dom_id(@todo)}_form", 
+          partial: "form", 
+          locals: { todo: @todo }) 
+        }
+        # format.html { render :new, status: :unprocessable_entity }
+        # format.json { render json: @todo.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -41,10 +46,9 @@ class TodosController < ApplicationController
     respond_to do |format|
       if @todo.update(todo_params)
         format.html { redirect_to todo_url(@todo), notice: "Todo was successfully updated." }
-        format.json { render :show, status: :ok, location: @todo }
       else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @todo.errors, status: :unprocessable_entity }
+        format.turbo_stream { render turbo_stream: turbo_stream.replace("#{helpers.dom_id(@todo)}_form", partial: "form", locals: { todo: @todo }) }
+        # format.html { render :edit, status: :unprocessable_entity }
       end
     end
   end
@@ -54,6 +58,7 @@ class TodosController < ApplicationController
     @todo.destroy
 
     respond_to do |format|
+      format.turbo_stream { render turbo_stream: turbo_stream.remove("#{helpers.dom_id(@todo)}_item")}
       format.html { redirect_to todos_url, notice: "Todo was successfully destroyed." }
       format.json { head :no_content }
     end

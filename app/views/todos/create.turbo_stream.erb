@@ -2,7 +2,6 @@
   <%= render "todo", todo: @todo %>
 <% end %>
 
-<%= turbo_stream.replace "#{dom_id(Todo.new)}_form do %>
-
+<%= turbo_stream.replace "#{dom_id(Todo.new)}_form" do %>
   <%= render "form", todo: Todo.new %>
 <% end %>
