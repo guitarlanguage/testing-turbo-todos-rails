@@ -6,8 +6,12 @@
 
   <%= render "form", todo: Todo.new %>
 
-  <div id="todos" class="divide-y list-none">
+  
+  <turbo-frame id="todos" class="divide-y list-none">
     <%= render @todos %>
-  </div>
+  </turbo-frame>
+
+
+  
 </div>
 

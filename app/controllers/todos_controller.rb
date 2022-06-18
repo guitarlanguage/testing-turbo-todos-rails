@@ -3,6 +3,7 @@ class TodosController < ApplicationController
 
   # GET /todos or /todos.json
   def index
+    
     @todos = Todo.in_order_of(:status, %w[incomplete complete])
   end
 
@@ -45,6 +46,8 @@ class TodosController < ApplicationController
   def update
     respond_to do |format|
       if @todo.update(todo_params)
+        # format.turbo_stream
+        # format.turbo_stream { render turbo_stream: turbo_stream.replace("todos") }
         format.html { redirect_to todo_url(@todo), notice: "Todo was successfully updated." }
       else
         format.turbo_stream { render turbo_stream: turbo_stream.replace("#{helpers.dom_id(@todo)}_form", partial: "form", locals: { todo: @todo }) }
